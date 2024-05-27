@@ -1,0 +1,27 @@
+---
+- hosts: all
+  become: yes
+
+  tasks:
+    - name: Update package list
+      apt:
+        update_cache: yes
+
+    - name: Install Apache
+      apt:
+        name: apache2
+        state: present
+
+    - name: Allow Apache through the firewall
+      ufw:
+        rule: allow
+        name: "Apache Full"
+
+    - name: Check Apache status
+      command: systemctl status apache2
+      register: apache_status
+      changed_when: false
+
+    - name: Print Apache status
+      debug:
+        var: apache_status.stdout_lines
